@@ -15,46 +15,46 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
 import kr.ac.kumoh.ce.s20240000.s24w10counter.ui.theme.S24W10CounterTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val vm = ViewModelProvider(this)[CounterViewModel::class.java]
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             S24W10CounterTheme {
-                MainScreen()
+                MainScreen(vm)
             }
         }
     }
 }
 
 @Composable
-fun MainScreen() {
-    val (count1, setCount1) = rememberSaveable { mutableIntStateOf(0) }
-    val (expanded1, setExpanded1) = rememberSaveable { mutableStateOf(false) }
-
-    val (count2, setCount2) = rememberSaveable { mutableIntStateOf(0) }
-    val (expanded2, setExpanded2) = rememberSaveable { mutableStateOf(false) }
+fun MainScreen(viewModel: CounterViewModel) {
+    //val (count, setCount) = rememberSaveable { mutableIntStateOf(0) }
+    val count by viewModel.count.observeAsState(0)
+    val (expanded, setExpanded) = rememberSaveable { mutableStateOf(false) }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(Modifier.padding(innerPadding)) {
             Counter(
                 Modifier.padding(innerPadding),
-                count1, setCount1,
-                expanded1, setExpanded1,
-            )
-            Counter(
-                Modifier.padding(innerPadding),
-                count2, setCount2,
-                expanded2, setExpanded2,
+                count,
+                { viewModel.onAdd() },
+                { viewModel.onSub() },
+                { viewModel.onReset() },
+                expanded, setExpanded,
             )
         }
     }
@@ -64,7 +64,9 @@ fun MainScreen() {
 fun Counter(
     modifier: Modifier = Modifier,
     count: Int,
-    onChangeCount: (Int) -> Unit,
+    onAdd: () -> Unit,
+    onSub: () -> Unit,
+    onReset: () -> Unit,
     expanded: Boolean,
     onChangeExpanded: (Boolean) -> Unit,
 ) {
@@ -80,7 +82,7 @@ fun Counter(
         Button(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             onClick = {
-                onChangeCount(count + 1)
+                onAdd()
                 onChangeExpanded(false)
             }
         ) {
@@ -106,7 +108,7 @@ fun Counter(
                     modifier = Modifier.padding(16.dp).weight(1F),
                     onClick = {
                         if (count > 0)
-                            onChangeCount(count - 1)
+                            onSub()
 
                         onChangeExpanded(false)
                     }
@@ -119,7 +121,7 @@ fun Counter(
                 Button(
                     modifier = Modifier.padding(16.dp).weight(1F),
                     onClick = {
-                        onChangeCount(0)
+                        onReset()
                         onChangeExpanded(false)
                     }
                 ) {
