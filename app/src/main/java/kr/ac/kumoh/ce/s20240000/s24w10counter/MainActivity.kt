@@ -15,12 +15,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -41,23 +38,36 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen() {
+    val (count1, setCount1) = rememberSaveable { mutableIntStateOf(0) }
+    val (expanded1, setExpanded1) = rememberSaveable { mutableStateOf(false) }
+
+    val (count2, setCount2) = rememberSaveable { mutableIntStateOf(0) }
+    val (expanded2, setExpanded2) = rememberSaveable { mutableStateOf(false) }
+
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//        Column(
-//            modifier = Modifier.padding(innerPadding).fillMaxSize(),
-//            verticalArrangement = Arrangement.SpaceEvenly,
-//        ) {
-//            Counter()
-//            Counter()
-//        }
-        Counter(Modifier.padding(innerPadding))
+        Column(Modifier.padding(innerPadding)) {
+            Counter(
+                Modifier.padding(innerPadding),
+                count1, setCount1,
+                expanded1, setExpanded1,
+            )
+            Counter(
+                Modifier.padding(innerPadding),
+                count2, setCount2,
+                expanded2, setExpanded2,
+            )
+        }
     }
 }
 
 @Composable
-fun Counter(modifier: Modifier = Modifier) {
-    val (count, setCount) = rememberSaveable { mutableIntStateOf(0) }
-    var expanded by remember { mutableStateOf(false) }
-
+fun Counter(
+    modifier: Modifier = Modifier,
+    count: Int,
+    onChangeCount: (Int) -> Unit,
+    expanded: Boolean,
+    onChangeExpanded: (Boolean) -> Unit,
+) {
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
@@ -70,8 +80,8 @@ fun Counter(modifier: Modifier = Modifier) {
         Button(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             onClick = {
-                setCount(count + 1)
-                expanded = false
+                onChangeCount(count + 1)
+                onChangeExpanded(false)
             }
         ) {
             Text(
@@ -82,7 +92,7 @@ fun Counter(modifier: Modifier = Modifier) {
         Button(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             onClick = {
-                expanded = !expanded
+                onChangeExpanded(!expanded)
             }
         ) {
             Text(
@@ -96,9 +106,9 @@ fun Counter(modifier: Modifier = Modifier) {
                     modifier = Modifier.padding(16.dp).weight(1F),
                     onClick = {
                         if (count > 0)
-                            setCount(count - 1)
+                            onChangeCount(count - 1)
 
-                        expanded = false
+                        onChangeExpanded(false)
                     }
                 ) {
                     Text(
@@ -109,8 +119,8 @@ fun Counter(modifier: Modifier = Modifier) {
                 Button(
                     modifier = Modifier.padding(16.dp).weight(1F),
                     onClick = {
-                        setCount(0)
-                        expanded = false
+                        onChangeCount(0)
+                        onChangeExpanded(false)
                     }
                 ) {
                     Text(
@@ -122,4 +132,3 @@ fun Counter(modifier: Modifier = Modifier) {
         }
     }
 }
-
