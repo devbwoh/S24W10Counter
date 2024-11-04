@@ -41,7 +41,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Counter(Modifier.padding(innerPadding))
+        Column(
+            modifier = Modifier.padding(innerPadding).fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceEvenly,
+        ) {
+            Counter()
+            Counter()
+        }
     }
 }
 
@@ -51,7 +57,7 @@ fun Counter(modifier: Modifier = Modifier) {
     var expanded by remember { mutableStateOf(false) }
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
