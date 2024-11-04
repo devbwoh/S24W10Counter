@@ -4,8 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,8 +15,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -42,8 +47,8 @@ fun MainScreen() {
 
 @Composable
 fun Counter(modifier: Modifier = Modifier) {
-    //var count = 0;
     val (count, setCount) = remember { mutableIntStateOf(0) }
+    var expanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -57,8 +62,8 @@ fun Counter(modifier: Modifier = Modifier) {
         Button(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             onClick = {
-                //count++
                 setCount(count + 1)
+                expanded = false
             }
         ) {
             Text(
@@ -69,25 +74,43 @@ fun Counter(modifier: Modifier = Modifier) {
         Button(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             onClick = {
-                if (count > 0)
-                    setCount(count - 1)
+                expanded = !expanded
             }
         ) {
             Text(
-                "감소",
+                "더 보기",
                 fontSize = 30.sp,
             )
         }
-        Button(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            onClick = {
-                setCount(0)
+        AnimatedVisibility(expanded) {
+            Row {
+                Button(
+                    modifier = Modifier.padding(16.dp).weight(1F),
+                    onClick = {
+                        if (count > 0)
+                            setCount(count - 1)
+
+                        expanded = false
+                    }
+                ) {
+                    Text(
+                        "감소",
+                        fontSize = 30.sp,
+                    )
+                }
+                Button(
+                    modifier = Modifier.padding(16.dp).weight(1F),
+                    onClick = {
+                        setCount(0)
+                        expanded = false
+                    }
+                ) {
+                    Text(
+                        "초기화",
+                        fontSize = 30.sp,
+                    )
+                }
             }
-        ) {
-            Text(
-                "초기화",
-                fontSize = 30.sp,
-            )
         }
     }
 }
