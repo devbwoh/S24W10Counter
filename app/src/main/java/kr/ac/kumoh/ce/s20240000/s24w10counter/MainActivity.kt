@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,19 +42,20 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Column(
-            modifier = Modifier.padding(innerPadding).fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceEvenly,
-        ) {
-            Counter()
-            Counter()
-        }
+//        Column(
+//            modifier = Modifier.padding(innerPadding).fillMaxSize(),
+//            verticalArrangement = Arrangement.SpaceEvenly,
+//        ) {
+//            Counter()
+//            Counter()
+//        }
+        Counter(Modifier.padding(innerPadding))
     }
 }
 
 @Composable
 fun Counter(modifier: Modifier = Modifier) {
-    val (count, setCount) = remember { mutableIntStateOf(0) }
+    val (count, setCount) = rememberSaveable { mutableIntStateOf(0) }
     var expanded by remember { mutableStateOf(false) }
 
     Column(
